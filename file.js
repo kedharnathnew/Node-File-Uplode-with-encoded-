@@ -1,6 +1,8 @@
 var Express = require('express');
 var multer = require('multer');
 var bodyParser = require('body-parser');
+var mailer = require("nodemailer");
+
 var fs = require('fs');
 var app = Express();
 app.use(bodyParser.json());
@@ -21,7 +23,25 @@ var upload = multer({
     storage: Storage
 }).array("imgUploader", 3); //Field name and max count
 
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: "kedharnath22@gmail.com",
+        pass: "xxxxxxxxxxxx"
+    }
+   });
 
+   const mailOptions = {
+    from: 'kedharnath22@gmail.com', // sender address
+    to: 'kedharnathnew@gmail.com', // list of receivers
+    subject: 'Subject of your email', // Subject line
+    html: '<p>Your html here</p>'// plain text body
+  };
+
+ 
+
+ 
 
 app.get("/", function(req, res) {
    
@@ -47,6 +67,30 @@ app.post("/api/Upload", function(req, res) {
         return res.end("File uploaded sucessfully!.");
     });
 });
+
+app.get('/api/mail',function(req,res){
+
+/* 
+    console.log(req);
+    smtpTransport.sendMail(mail, function(error, response){
+        if(error){
+            console.log(error);
+            return res.end(error)
+        }else{
+            return res.end("Message sent: " + response.message);
+            //console.log("Message sent: " + response.message);
+        }
+    
+        smtpTransport.close();
+    }); */
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        if(err)
+          console.log(err)
+        else
+          console.log(info);
+     });
+})
 
 function base64Encode(file) {
     var body = fs.readFileSync(file);
